@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>NASA Articles</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h1>NASA Research Articles</h1>
+
+    <div class="top-section">
+        <div class="articles">
+            <h2>Top Articles</h2>
+            {% for _, row in top_articles.iterrows() %}
+                <div class="article">
+                    <h3>{{ row.title }}</h3>
+                    <p>{{ row.abstract[:200] }}...</p>
+                    <p><b>Authors:</b> {{ row.authors }} | <b>Journal:</b> {{ row.journal }} | <b>Year:</b> {{ row.year }}</p>
+                </div>
+            {% endfor %}
+        </div>
+        <div class="visuals">
+            <h2>WordCloud</h2>
+            <img src="{{ url_for('static', filename='wordcloud.png') }}" width="500">
+            <h2>Top Words</h2>
+            <ul>
+                {% for word, count in common_words %}
+                    <li>{{ word }}: {{ count }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+    <div class="search-bar">
+        <form method="POST" action="/">
+            <input type="text" name="query" placeholder="Search keywords...">
+            <button type="submit">Search</button>
+        </form>
+    </div>
+</body>
+</html>

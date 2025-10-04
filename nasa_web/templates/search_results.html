@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Search Results</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h1>Search Results for "{{ query }}"</h1>
+    <a href="/">Back to Home</a>
+    <div class="results">
+        {% for _, row in results.iterrows() %}
+            <div class="result">
+                <h3>{{ row.title }}</h3>
+                <p>{{ row.highlighted_abstract|safe }}</p>
+                <p><b>Authors:</b> {{ row.authors }} | <b>Journal:</b> {{ row.journal }} | <b>Year:</b> {{ row.year }}</p>
+                <p><b>Score:</b> {{ row.score }}%</p>
+            </div>
+        {% endfor %}
+    </div>
+</body>
+</html>
