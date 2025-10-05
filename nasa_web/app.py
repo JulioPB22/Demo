@@ -1,3 +1,4 @@
+
 from flask import Flask, render_template, request
 import pandas as pd
 import re
@@ -7,11 +8,15 @@ import matplotlib.pyplot as plt
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 import spacy
+import os
+
 
 app = Flask(__name__)
 
-# Cargar CSV
-df = pd.read_csv("nasa_pmc_metadata.csv")
+# Cargar CSV con ruta absoluta
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+csv_path = os.path.join(BASE_DIR, "nasa_pmc_metadata.csv")
+df = pd.read_csv(csv_path)
 df = df.dropna(subset=["abstract"])
 
 # Cargar modelo de SpaCy
@@ -53,10 +58,15 @@ def highlight_keywords(text, keywords):
         text = pattern.sub(repl, text)
     return text
 
+
 # Generar WordCloud global
 all_text = " ".join(df["clean_abstract"].tolist())
 wordcloud = WordCloud(width=1000, height=500, background_color="white").generate(all_text)
-wordcloud.to_file("static/wordcloud.png")
+# Asegurar que la carpeta 'static' existe
+static_dir = os.path.join(BASE_DIR, "static")
+os.makedirs(static_dir, exist_ok=True)
+wordcloud_path = os.path.join(static_dir, "wordcloud.png")
+wordcloud.to_file(wordcloud_path)
 
 # Top palabras
 word_counts = Counter(all_text.split())
@@ -80,4 +90,6 @@ def search(query=None):
     return render_template("search_results.html", query=query, results=results)
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(debug=False, host="0.0.0.0", port=port)
+
